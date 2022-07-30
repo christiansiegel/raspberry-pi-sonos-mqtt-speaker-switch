@@ -1,0 +1,22 @@
+{
+  "name": "raspberry-pi-sonos-mqtt-speaker-switch",
+  "version": "1.0.0",
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "node src/main.js",
+    "start": "pm2 start src/main.js --name automation --restart-delay 1000 --time --cron '0 0 * * *' ",
+    "restart": "pm2 restart automation",
+    "stop": "pm2 delete automation",
+    "logs": "pm2 logs automation",
+    "startup": "pm2 startup",
+    "save": "pm2 save"
+  },
+  "author": "christiansiegel",
+  "license": "MIT",
+  "dependencies": {
+    "async-mqtt": "2.6.2",
+    "mqtt": "4.3.7",
+    "pm2": "5.2.0",
+    "sonos": "1.14.1"
+  }
+}
