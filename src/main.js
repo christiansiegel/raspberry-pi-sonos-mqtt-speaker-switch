@@ -1,11 +1,17 @@
+const express = require('express')
 const {sleep, secondsSince} = require('./util')
 const Switch = require('./switch')
 const Sonos = require('./sonos')
 const config = require('./config.json')
 
+const app = express()
+app.use(express.static('public'));
+app.listen(config.WEB_PORT, () => {
+  console.log(`App listening on port ${config.WEB_PORT}`)
+})
 
-const app = async () => {
-  console.log('app started')
+const controlLoop = async () => {
+  console.log('Control loop started')
 
   const sonos = new Sonos({
     name: config.SONOS_NAME,
@@ -44,5 +50,4 @@ const app = async () => {
     await sleep(1000)
   }
 }
-
-app()
+controlLoop()
