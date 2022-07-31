@@ -1,18 +1,13 @@
-const express = require('express')
-const {sleep, secondsSince} = require('./util')
+const {sleep, now, secondsSince} = require('./util')
+const WebServer = require('./web-server')
 const Switch = require('./switch')
 const Sonos = require('./sonos')
 const config = require('./config.json')
 
-const app = express()
-app.use(express.static('public'));
-app.listen(config.WEB_PORT, () => {
-  console.log(`App listening on port ${config.WEB_PORT}`)
-})
+const app = async () => {
+  console.log('App loop started')
 
-const controlLoop = async () => {
-  console.log('Control loop started')
-
+  const webServer = new WebServer(config.WEB_PORT)
   const sonos = new Sonos({
     name: config.SONOS_NAME,
   })
@@ -23,31 +18,34 @@ const controlLoop = async () => {
     stateResultTopic: config.MQTT_SPEAKER_STATE_RESULT_TOPIC,
   })
 
-  let sonosWasLastPlayingAt = undefined;
+  const log = text => {
+    console.log(text)
+    webServer.sendEvent({ts: now(), text})
+  }
 
   while(true) {
     const [isSonosPlaying, isSpeakerOn] = await Promise.all([sonos.isPlaying(), speaker.isOn()])
-    console.log(`sonos: ${isSonosPlaying ? '' : 'not '}playing; speaker: ${isSpeakerOn ? 'on' : 'off'}`)
+    log(`sonos: ${isSonosPlaying ? '' : 'not '}playing; speaker: ${isSpeakerOn ? 'on' : 'off'}`)
 
     if (isSonosPlaying && !isSpeakerOn) {
-      console.log('turning on speaker...')
+      log('turning on speaker...')
       await sonos.mute()
       await Promise.all([sonos.setVolume(20), speaker.turnOn()])
       await sonos.unmute()
-      console.log('done')
+      log('done')
     }
     else if (!isSonosPlaying && isSpeakerOn) {
       const secondsUntilTurnOff = config.SPEAKER_TURN_OFF_TIMEOUT_SECONDS - secondsSince(sonos.getLastPlayingDate())
       if (secondsUntilTurnOff > 0) {
-        console.log(`turning off speaker in ${secondsUntilTurnOff}s...`)
+        log(`turning off speaker in ${secondsUntilTurnOff}s...`)
       } else {
-        console.log('turning off speaker now...')
+        log('turning off speaker now...')
         await speaker.turnOff()
-        console.log('done')
+        log('done')
       }
     }
     
     await sleep(1000)
   }
 }
-controlLoop()
+app()
