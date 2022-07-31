@@ -23,7 +23,7 @@ class Sonos {
     return false;
   }
 
-  async lastPlayingAt() {
+  getLastPlayingDate() {
     return this.#lastPlayingDate
   }
 

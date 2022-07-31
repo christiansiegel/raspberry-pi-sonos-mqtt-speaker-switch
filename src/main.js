@@ -31,7 +31,7 @@ const app = async () => {
       console.log('done')
     }
     else if (!isSonosPlaying && isSpeakerOn) {
-      const secondsUntilTurnOff = config.SPEAKER_TURN_OFF_TIMEOUT_SECONDS - secondsSince(sonos.getLastPlaying())
+      const secondsUntilTurnOff = config.SPEAKER_TURN_OFF_TIMEOUT_SECONDS - secondsSince(sonos.getLastPlayingDate())
       if (secondsUntilTurnOff > 0) {
         console.log(`turning off speaker in ${secondsUntilTurnOff}s...`)
       } else {
