@@ -1,4 +1,4 @@
-const {sleep, now, secondsSince} = require('./util')
+const {sleep, secondsSince} = require('./util')
 const Speaker = require('./speaker')
 const Sonos = require('./sonos')
 const config = require('./config.json')
@@ -16,10 +16,6 @@ const app = async () => {
     const [isSonosPlaying, isSpeakerOn] = await Promise.all([sonos.isPlaying(), speaker.isOn()])
     console.log(`sonos: ${isSonosPlaying ? '' : 'not '}playing; speaker: ${isSpeakerOn ? 'on' : 'off'}`)
 
-    if (isSonosPlaying) {
-      sonosWasLastPlayingAt = now()
-    }
-
     if (isSonosPlaying && !isSpeakerOn) {
       console.log('turning on speaker...')
       await sonos.mute()
@@ -28,7 +24,7 @@ const app = async () => {
       console.log('done')
     }
     else if (!isSonosPlaying && isSpeakerOn) {
-      const secondsUntilTurnOff = config.SPEAKER_TURN_OFF_TIMEOUT_SECONDS - secondsSince(sonosWasLastPlayingAt)
+      const secondsUntilTurnOff = config.SPEAKER_TURN_OFF_TIMEOUT_SECONDS - secondsSince(sonos.getLastPlaying())
       if (secondsUntilTurnOff > 0) {
         console.log(`turning off speaker in ${secondsUntilTurnOff}s...`)
       } else {

@@ -1,17 +1,32 @@
 const AsyncDeviceDiscovery = require('sonos').AsyncDeviceDiscovery
+const {now} = require('./util')
 
 class Sonos {
   #sonosInstance
   #config
+  #lastPlayingDate
 
   constructor(config) {
     this.#sonosInstance = undefined
     this.#config = config
+    this.#lastPlayingDate = undefined
   }
 
   async isPlaying() {
-    const currentState = await (await this.#getSonos()).getCurrentState()
-    return currentState === 'playing'
+    const currentState = await this.getCurrentState()
+    if (currentState === 'playing') {
+      this.#lastPlayingDate = now()
+      return true;
+    }
+    return false;
+  }
+
+  async lastPlayingAt() {
+    return this.#lastPlayingDate
+  }
+
+  async getCurrentState() {
+    return await (await this.#getSonos()).getCurrentState()
   }
 
   async setVolume(volume) {
