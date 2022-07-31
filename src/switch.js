@@ -1,12 +1,14 @@
 const mqtt = require('async-mqtt')
 
-class Speaker {
-  #mqttClient
+class Switch {
   #config
+  #mqttClient
 
-  constructor(config) {
+  constructor({mqttHost, powerCommandTopic, stateCommandTopic, stateResultTopic}) {
+    this.#config = {
+      mqttHost, powerCommandTopic, stateCommandTopic, stateResultTopic
+    }
     this.#mqttClient = undefined
-    this.#config = config
   }
 
   async turnOn() {
@@ -21,9 +23,9 @@ class Speaker {
     const mqttClient = await this.#getMqttClient()
     try {
       const [message,] = await Promise.all([
-        getFirstMessageFromTopic(mqttClient, this.#config.MQTT_SPEAKER_STATE_RESULT_TOPIC, 1000),
-        mqttClient.subscribe(this.#config.MQTT_SPEAKER_STATE_RESULT_TOPIC),
-        mqttClient.publish(this.#config.MQTT_SPEAKER_STATE_COMMAND_TOPIC, 0),
+        getFirstMessageFromTopic(mqttClient, this.#config.stateResultTopic, 1000),
+        mqttClient.subscribe(this.#config.stateResultTopic),
+        mqttClient.publish(this.#config.stateCommandTopic, 0),
       ])
       return JSON.parse(message).POWER === 'ON'
     } catch (error) {
@@ -33,11 +35,11 @@ class Speaker {
   }
 
   async #turnSpeaker(state)  {
-    await (await this.#getMqttClient()).publish(this.#config.MQTT_SPEAKER_POWER_COMMAND_TOPIC, state)
+    await (await this.#getMqttClient()).publish(this.#config.powerCommandTopic, state)
   }
 
   async #getMqttClient() {
-    return this.#mqttClient || (this.#mqttClient = await mqtt.connectAsync('mqtt://' + this.#config.MQTT_HOST))
+    return this.#mqttClient || (this.#mqttClient = await mqtt.connectAsync('mqtt://' + this.#config.mqttHost))
   }
 }
 
@@ -59,4 +61,4 @@ const getFirstMessageFromTopic = (mqttClient, topic, timeoutMs) => {
   })
 }
 
-module.exports = Speaker
+module.exports = Switch

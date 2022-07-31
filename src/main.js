@@ -1,5 +1,5 @@
 const {sleep, secondsSince} = require('./util')
-const Speaker = require('./speaker')
+const Switch = require('./switch')
 const Sonos = require('./sonos')
 const config = require('./config.json')
 
@@ -7,8 +7,15 @@ const config = require('./config.json')
 const app = async () => {
   console.log('app started')
 
-  const sonos = new Sonos(config)
-  const speaker = new Speaker(config)
+  const sonos = new Sonos({
+    name: config.SONOS_NAME,
+  })
+  const speaker = new Switch({
+    mqttHost: config.MQTT_HOST,
+    powerCommandTopic: config.MQTT_SPEAKER_POWER_COMMAND_TOPIC,
+    stateCommandTopic: config.MQTT_SPEAKER_STATE_COMMAND_TOPIC,
+    stateResultTopic: config.MQTT_SPEAKER_STATE_RESULT_TOPIC,
+  })
 
   let sonosWasLastPlayingAt = undefined;
 

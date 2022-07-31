@@ -2,13 +2,15 @@ const AsyncDeviceDiscovery = require('sonos').AsyncDeviceDiscovery
 const {now} = require('./util')
 
 class Sonos {
-  #sonosInstance
   #config
+  #sonosInstance
   #lastPlayingDate
 
-  constructor(config) {
+  constructor({name}) {
+    this.#config = {
+      name
+    }
     this.#sonosInstance = undefined
-    this.#config = config
     this.#lastPlayingDate = undefined
   }
 
@@ -48,7 +50,7 @@ class Sonos {
   async #discover() {
     const device = await new AsyncDeviceDiscovery().discover()
     const groups = await device.getAllGroups()
-    const group = groups.find(g => g.Name === this.#config.SONOS_NAME)
+    const group = groups.find(g => g.Name === this.#config.name)
     return group.CoordinatorDevice()
   }
 }

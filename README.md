@@ -14,7 +14,7 @@ Little node app to toggle an active speaker's power via MQTT switch based on the
 ## Components
 
 - Sonos CONNECT
-- SONOFF ESP8266 MQTT switch
+- SONOFF Tasmota ESP8266 MQTT switch
 - RaspberryPi Zero to run the script
 
 ## RaspberryPi Setup
