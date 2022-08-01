@@ -24,6 +24,8 @@ const app = async () => {
   }
 
   while(true) {
+    const timeoutId = setTimeout(() => { log('loop timeout'); throw 'loop timeout' }, config.LOOP_TIMEOUT_SECONDS * 1000);
+
     const [isSonosPlaying, isSpeakerOn] = await Promise.all([sonos.isPlaying(), speaker.isOn()])
     log(`sonos: ${isSonosPlaying ? '' : 'not '}playing; speaker: ${isSpeakerOn ? 'on' : 'off'}`)
 
@@ -46,6 +48,7 @@ const app = async () => {
     }
     
     await sleep(1000)
+    clearTimeout(timeoutId)
   }
 }
 app()

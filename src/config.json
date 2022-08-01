@@ -1,6 +1,7 @@
 {
   "WEB_PORT": 8080,
   "SPEAKER_TURN_OFF_TIMEOUT_SECONDS": 5,
+  "LOOP_TIMEOUT_SECONDS": 20,
   "SONOS_NAME": "Living Room",
   "MQTT_HOST": "pizero",
   "MQTT_SPEAKER_POWER_COMMAND_TOPIC": "cmnd/speakers/power",
