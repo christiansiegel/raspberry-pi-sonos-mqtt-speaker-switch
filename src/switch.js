@@ -4,10 +4,8 @@ class Switch {
   #config
   #mqttClient
 
-  constructor({mqttHost, powerCommandTopic, stateCommandTopic, stateResultTopic}) {
-    this.#config = {
-      mqttHost, powerCommandTopic, stateCommandTopic, stateResultTopic
-    }
+  constructor(config = {mqttHost, powerCommandTopic, stateCommandTopic, stateResultTopic}) {
+    this.#config = config
     this.#mqttClient = undefined
   }
 

@@ -6,10 +6,8 @@ class Sonos {
   #sonosInstance
   #lastPlayingDate
 
-  constructor({name}) {
-    this.#config = {
-      name
-    }
+  constructor(config = {name}) {
+    this.#config = config
     this.#sonosInstance = undefined
     this.#lastPlayingDate = undefined
   }
